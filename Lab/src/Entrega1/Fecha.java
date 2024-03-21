@@ -17,7 +17,13 @@ public class Fecha {
     public static Fecha of(Integer año, Integer mes, Integer dia) {
         return new Fecha(año, mes, dia);
     }
-    
+    public static Fecha parse(String fechaStr) {
+        String[] partes = fechaStr.split("-");
+        int año = Integer.parseInt(partes[0]);
+        int mes = Integer.parseInt(partes[1]);
+        int dia = Integer.parseInt(partes[2]);
+        return new Fecha(año, mes, dia);
+    }
     public Integer getAño() {
         return año;
     }
@@ -119,6 +125,9 @@ public class Fecha {
 
     public static void main(String[] args) {
         Fecha fecha = new Fecha(2024, 3, 10);
+        String cadenaFecha = "2023-09-20";
+
+        System.out.println(Fecha.parse(cadenaFecha));
         System.out.println("Fecha: " + fecha);
         System.out.println("Nombre del mes: " + fecha.getNombreMes());
         System.out.println("Día de la semana: " + fecha.getDiaSemana());
