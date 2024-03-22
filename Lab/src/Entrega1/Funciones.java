@@ -33,7 +33,7 @@ public class Funciones {
  //3 Dados los números enteros n,k con n ≥ k diseñar una función que calcule el número S(n,k)
     public static double numerosS(int n, int k) {
     	if (k>n) {
-            System.out.println("N debe ser menor que K") ;
+            System.out.println("N debe ser mayor que K") ;
         }
     	 int sumatorio = 0;
 
@@ -67,6 +67,51 @@ public class Funciones {
         }
         return maximo;
     }
+    
+        
+ //Defensa
+    
+    public static double P2(int n, int k) {
+		if(n<k) {
+			System.out.println("N debe ser mayor que K");
+			return 0;
+		}
+		
+    	int multiplicador = 1;
+		
+	    for (int i = 0; i < k-1; i++) {
+	        multiplicador *= (n-i);
+	        if(i>k+1) {
+	        	return 0; // esto hará que si no se valida que i<k+1 se detenga el bucle y de 0
+	        }
+	        }
+	    int resultado = (int) (multiplicador);
+	    return resultado;
+		}
+    public static int C2(int n, int k) {
+    	if (k>n) {
+            System.out.println("N debe ser mayor que K") ;
+            return 0;
+        }
+    	int combinatorio = factorial(n) / (factorial(k+1) * factorial(n - (k+1)));
+        return combinatorio;
+    }
+    public static double S2(int n, int k) {
+    	if (k>n) {
+            System.out.println("N debe ser menor que K");
+            return 0;
+        }
+    	 int sumatorio = 0;
+
+    	    for (int i = 0; i < k + 1; i++) {
+    	        sumatorio += Math.pow(-1, i) * numeroCombinatorio(k, i) * Math.pow(k - i, n);
+    	    }
+
+    	    double resultado = ((double) factorial(k) / factorial(k + 2)) * sumatorio;
+    	    return resultado;}
+    
+    
+    
     public static void main(String[] args) {
         int numero = 77;
         int n = 8;
@@ -81,6 +126,25 @@ public class Funciones {
         List<String> lista2 = List.of("hola", "mundo", "mi","nombre", "es", "Gonzalo");
         String resultado2 = cadenaMasLarga(lista2);
         System.out.println("La cadena más larga es: " + resultado2);
+        
+        //Test Defensa
+        System.out.println("-----A----");
+        int n1=8;
+        int k1=5;
+        
+        int n2=3;
+        int k2=5;
+        //A
+        System.out.println(P2(n1, k1));
+        System.out.println(P2(n2,k2));
+        System.out.println("--B--");
+        //B
+        System.out.println(C2(n1, k1));
+        System.out.println(C2(n2, k2));
+        System.out.println("--C--");
+        //C
+        System.out.println(S2(n1, k1));
+        System.out.println(S2(n2, k2));
     }
     }
 

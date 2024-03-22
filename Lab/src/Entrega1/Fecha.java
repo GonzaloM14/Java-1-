@@ -122,6 +122,33 @@ public class Fecha {
     public String toString() {
         return String.format("%04d-%02d-%02d", año, mes, dia);
     }
+    
+    
+    
+    //Defensa
+    
+    public Fecha restarDiasFechaDada(Fecha fecha,int dias) {
+        if(dias>999 || dias<0) {
+        	System.out.println("El número de días debe tener 3 dígitos como máximo y ser positivo");
+        	 return new Fecha(0, 0, 0);	
+        }
+    	int[] diasEnMes = {0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+        int nuevoDia = fecha.dia - dias;
+        int nuevoMes = fecha.mes;
+        int nuevoAño = fecha.año;
+
+        while (nuevoDia <= 0) {
+            nuevoMes--;
+
+            if (nuevoMes <= 0) {
+                nuevoMes = 12;
+                nuevoAño--;
+            }
+
+            nuevoDia += diasEnMes[nuevoMes];
+        }
+        return new Fecha(nuevoAño, nuevoMes, nuevoDia);
+    }
 
     public static void main(String[] args) {
         Fecha fecha = new Fecha(2024, 3, 10);
@@ -141,5 +168,15 @@ public class Fecha {
         Fecha otraFecha = new Fecha(2024, 3, 15);
         System.out.println("Diferencia en días: " + fecha.diferenciaEnDias(otraFecha));
         System.out.println(fecha.esBisiesto(2024));
+    
+        //Test Defensa
+        
+        System.out.println("----------");
+        Fecha fecha1 = new Fecha(2024, 3, 10);
+        System.out.println(fecha.restarDiasFechaDada(fecha1, 2));
+        System.out.println(fecha.restarDiasFechaDada(fecha1, 20));
+        System.out.println(fecha.restarDiasFechaDada(fecha1, 200));
+        System.out.println(fecha.restarDiasFechaDada(fecha1, 2000)); // más de 3 dígitos
+        System.out.println(fecha.restarDiasFechaDada(fecha1, -2)); //negativo
     }
 }
