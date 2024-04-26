@@ -1,6 +1,8 @@
 package Entrega2;
 
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BinaryOperator;
@@ -85,5 +87,8 @@ public interface DataFrame {
 	DataFrame addCalculatedColum(String newColum,Function<List<String>,String> f);
 	DataFrame removeColum(String colum);
 	String toString();	
-	
+	DataFrame removeColumnIndex(DataFrame df, int ci);
+	List<DataFrame> divideDataFrame(DataFrame df, int ci);
+	DataFrame emptyDataFrame(DataFrame df) ; 
+	DataFrame addDataFrame(DataFrame df1, DataFrame df2);
 }

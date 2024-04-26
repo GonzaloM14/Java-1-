@@ -31,14 +31,14 @@ public class DataFrameImpl implements DataFrame {
 	private List<List<String>> rows; // Lista de las filas
 	// --------------------
 	// Constructores
-	private DataFrameImpl(List<String>columNames, Map<String, Integer> columIndex, List<List<String>> rows) {
+	DataFrameImpl(List<String>columNames, Map<String, Integer> columIndex, List<List<String>> rows) {
 		this.columNames = new ArrayList<>(columNames);
         this.columIndex = new HashMap<>(columIndex);
         this.rows = new ArrayList<>(rows);
 	}
 	// --------------------
 	// Métodos de factoría
-	private static DataFrameImpl of(List<String> columNames,Map<String,Integer> columIndex,List<List<String>> rows) {
+	static DataFrameImpl of(List<String> columNames,Map<String,Integer> columIndex,List<List<String>> rows) {
 		// Se calcula a partir del constructor de manera directa
 		
 		return new DataFrameImpl(columNames, columIndex, rows);
@@ -384,7 +384,91 @@ public class DataFrameImpl implements DataFrame {
 		String s = IntStream.range(0, n).boxed().map(i->"_").collect(Collectors.joining(""));
 		return IntStream.range(0, m).boxed().map(i->s).collect(Collectors.joining("|","|","|"));
 	}
-	//
+	
+	
+	
+	public  DataFrame emptyDataFrame(DataFrame df) {
+	    List<String> columns = df.columNames();
+	    List<String> emptyColumns = new ArrayList<>(columns);
+	    Map<String, Integer> emptyIndex = new HashMap<>();
+	    List<List<String>> emptyData = new ArrayList<>();
+	    return DataFrameImpl.of(emptyColumns, emptyIndex, emptyData);
+	}
+	 
+    @Override
+    public DataFrame addDataFrame(DataFrame df1, DataFrame df2) {
+	    List<String> columns1 = df1.columNames();
+	    List<String> columns2 = df2.columNames();
+	    List<List<String>> data1 = df1.rows();
+	    List<List<String>> data2 = df2.rows();
+
+	    List<String> combinedColumns = new ArrayList<>(columns1);
+	    combinedColumns.addAll(columns2);
+
+	    Map<String, Integer> combinedIndex = new HashMap<>();
+	    int index = 0;
+	    for (String column : combinedColumns) {
+	        combinedIndex.put(column, index++);
+	    }
+	   
+	    List<List<String>> combinedData = new ArrayList<>(data1);
+	    combinedData.addAll(data2);
+
+	    return DataFrameImpl.of(combinedColumns, combinedIndex, combinedData);
+	}
+    public DataFrame removeColumnIndex(DataFrame df, int ci) {
+	    if (ci < 0 || ci >= df.columNames().size()) {
+	        throw new IllegalArgumentException("El índice está fuera del rango de columnas");
+	    }
+	    List<String> newColumns = new ArrayList<>(df.columNames());
+	    newColumns.remove(ci);
+	    Map<String, Integer> newIndex = new HashMap<>();
+	    int index = 0;
+	    for (int i = 0; i < df.columNames().size(); i++) {
+	        if (i != ci) {
+	            newIndex.put(newColumns.get(index), index);
+	            index++;
+	        }
+	    }
+
+	    List<List<String>> newData = new ArrayList<>();
+	    for (List<String> row : df.rows()) {
+	        List<String> newRow = new ArrayList<>(row);
+	        newRow.remove(ci);
+	        newData.add(newRow);
+	    }
+	    return DataFrameImpl.of(newColumns, newIndex, newData);
+	}
+
+    public  List<DataFrame> divideDataFrame(DataFrame df, int ci) {
+
+        if (ci < 0 || ci >= df.columNames().size()) {
+            throw new IllegalArgumentException("El índice está fuera del rango de columnas");
+        }
+        List<String> columns = df.columNames();
+        List<List<String>> data = df.rows();
+        List<String> columns1 = new ArrayList<>(columns.subList(0, ci + 1));
+        List<String> columns2 = new ArrayList<>(columns.subList(ci + 1, columns.size()));
+        List<List<String>> data1 = new ArrayList<>();
+        List<List<String>> data2 = new ArrayList<>();
+        for (List<String> row : data) { 
+            List<String> row1 = new ArrayList<>(row.subList(0, ci + 1));
+            List<String> row2 = new ArrayList<>(row.subList(ci + 1, row.size()));
+            data1.add(row1);
+            data2.add(row2);
+        }
+        DataFrame df1 = DataFrameImpl.of(columns1, data1);
+        DataFrame df2 = DataFrameImpl.of(columns2, data2);
+
+        List<DataFrame> result = new ArrayList<>();
+        result.add(df1);
+        result.add(df2);
+
+        return result;
+    }
+	
+	
+
 	public static void main(String[] args) {
 		DataFrame d = DataFrame.parse("src/Entrega2/personas.csv",
 				 List.of("Id","Nombre","Apellidos","Altura","Fecha_Nacimiento"));
@@ -398,7 +482,8 @@ public class DataFrameImpl implements DataFrame {
 				System.out.println(d.filter(row->{Double Altura=Double.parseDouble(row.get(3));return Altura > 1.8;}));
 				System.out.println(d.filter(lista -> DataFrame.parse(lista.get(4), LocalDate.class).isAfter(LocalDate.of(1998, 1, 1))));
 				System.out.println(d.addCalculatedColum("Email", lista -> lista.get(2)+"@email.com"));
-				
+				System.out.println(d.sortBy(row -> row.get(d.columNames().indexOf("Apellidos")), false));
+				System.out.println(d.sortBy(row -> row.get(d.columNames().indexOf("Altura")), false));
 				System.out.println("------Fichero Mascotas-----");
 				
 		DataFrame d2 = DataFrame.parse("src/Entrega2/mascotas.csv",
@@ -422,4 +507,7 @@ public class DataFrameImpl implements DataFrame {
 				System.out.println(d3.slice(1,3));
 				System.out.println(d3.removeColum("Titulo"));		
 				System.out.println(d3.filter(row->{Double Valoracion=Double.parseDouble(row.get(1));return Valoracion > 8.0;}));
-	}}
+				
+	}
+	}
+
